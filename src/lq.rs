@@ -2,6 +2,7 @@ use taic_pac::taic::Lq_;
 
 use crate::Taic;
 
+#[derive(Debug, Clone)]
 pub struct LocalQueue {
     base: usize,
     taic: Taic,
@@ -93,7 +94,8 @@ impl LocalQueue {
         &self
             .regs()
             .register_extint(irq)
-            .register_extint().write(|w| unsafe { w.bits(handler as _) });
+            .register_extint()
+            .write(|w| unsafe { w.bits(handler as _) });
     }
 
     fn queue_idx(&self) -> usize {
