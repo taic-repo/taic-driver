@@ -104,6 +104,12 @@ impl LocalQueue {
         let lq_idx = queue_idx % self.taic.lq_num;
         (gq_idx << 32) | lq_idx
     }
+
+    pub fn manually_drop(&self) {
+        let flq = self.taic.regs().flq();
+        log::info!("free local queue {:#x}", self.queue_idx());
+        flq.write(|w| unsafe { w.bits(self.queue_idx() as _) });
+    }
 }
 
 impl Drop for LocalQueue {
