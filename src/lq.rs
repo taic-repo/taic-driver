@@ -35,7 +35,7 @@ impl LocalQueue {
         }
     }
 
-    pub fn register_sender(&self, recv_os: usize, recv_proc: usize) {
+    pub fn register_sender(&self, recv_os: usize, recv_proc: usize, irq: usize) {
         &self
             .regs()
             .register_sender()
@@ -43,10 +43,10 @@ impl LocalQueue {
         &self
             .regs()
             .register_sender()
-            .write(|w| unsafe { w.bits(recv_proc as _) });
+            .write(|w| unsafe { w.bits(((recv_proc << 32) | irq) as _) });
     }
 
-    pub fn cancel_sender(&self, recv_os: usize, recv_proc: usize) {
+    pub fn cancel_sender(&self, recv_os: usize, recv_proc: usize, irq: usize) {
         &self
             .regs()
             .cancel_sender()
@@ -54,10 +54,10 @@ impl LocalQueue {
         &self
             .regs()
             .cancel_sender()
-            .write(|w| unsafe { w.bits(recv_proc as _) });
+            .write(|w| unsafe { w.bits(((recv_proc << 32) | irq) as _) });
     }
 
-    pub fn register_receiver(&self, send_os: usize, send_proc: usize, handler: usize) {
+    pub fn register_receiver(&self, send_os: usize, send_proc: usize, irq: usize, handler: usize) {
         &self
             .regs()
             .register_receiver()
@@ -65,14 +65,14 @@ impl LocalQueue {
         &self
             .regs()
             .register_receiver()
-            .write(|w| unsafe { w.bits(send_proc as _) });
+            .write(|w| unsafe { w.bits(((send_proc << 32) | irq) as _) });
         &self
             .regs()
             .register_receiver()
             .write(|w| unsafe { w.bits(handler as _) });
     }
 
-    pub fn send_intr(&self, recv_os: usize, recv_proc: usize) {
+    pub fn send_intr(&self, recv_os: usize, recv_proc: usize, irq: usize) {
         &self
             .regs()
             .send_intr()
@@ -80,7 +80,7 @@ impl LocalQueue {
         &self
             .regs()
             .send_intr()
-            .write(|w| unsafe { w.bits(recv_proc as _) });
+            .write(|w| unsafe { w.bits(((recv_proc << 32) | irq) as _) });
     }
 
     pub fn whart(&self, hartid: usize) {
